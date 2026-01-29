@@ -2,6 +2,9 @@
 library(jsonlite)
 library(dplyr)
 library(lubridate)
+library(stringr)
+library(httr)
+library(purrr)
 
 streaming_history_raw <- c("~/spotify-project/data/raw/Streaming_History_Audio_2016-2020_0.json", 
                        "~/spotify-project/data/raw/Streaming_History_Audio_2020-2022_1.json",
@@ -37,6 +40,12 @@ song_data <- streaming_history_clean %>%
          -episode_show_name,
          -spotify_episode_uri)
 
+# unique Songs für die API
+songs_unique <- song_data %>% 
+  distinct(
+    master_metadata_track_name,
+    master_metadata_album_artist_name)
+
 podcast_data <- streaming_history_clean %>% 
   filter(
     !is.na(episode_name) & !is.na(episode_show_name)
@@ -45,5 +54,26 @@ podcast_data <- streaming_history_clean %>%
          -master_metadata_album_artist_name,
          -master_metadata_album_album_name,
          -spotify_track_uri)
+
+
+# Verbindung zur API herstellen -------------------------------------------
+final_metadata %>% 
+  filter(
+    !is.na(release_date)
+  ) %>% 
+  summarise(
+    n()
+  )
+
+final_metadata %>% 
+  filter(
+    !is.na(tags)
+  ) %>% 
+  summarise(
+    n()
+  )
+
+# Audio features holen ----------------------------------------------------
+
 
 
